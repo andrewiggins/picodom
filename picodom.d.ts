@@ -5,15 +5,21 @@ export interface VNode<Data> {
 }
 
 export interface Component<Data> {
-  (data?: Data, ...children: VElement<{}>[]): VNode<Data>
+  (data: Data, children: VElement<{}>[]): VNode<Data>
 }
 
 export type VElement<Data> = VNode<Data> | string
 
 export function h<Data>(
   tag: Component<Data> | string,
+  data: Data,
+  children: Array<VElement<{}> | number>
+): VNode<Data>
+
+export function h<Data>(
+  tag: Component<Data> | string,
   data?: Data,
-  ...children: VElement<{}>[]
+  ...children: Array<VElement<{}> | number>
 ): VNode<Data>
 
 export function patch(
