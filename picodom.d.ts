@@ -1,3 +1,5 @@
+export as namespace picodom
+
 export interface VNode<Data> {
   tag: string
   data?: Data
@@ -22,5 +24,3 @@ export function patch(
   oldNode: VNode<{}> | null,
   node: VNode<{}>
 ): Element
-
-export as namespace picodom
