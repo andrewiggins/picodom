@@ -2,7 +2,7 @@ export as namespace picodom
 
 export interface VNode<Data> {
   tag: string
-  data?: Data
+  data: Data
   children: VElement<{}>[]
 }
 
