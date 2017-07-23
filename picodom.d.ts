@@ -1,17 +1,24 @@
+export as namespace picodom
+
 export interface VirtualNode<Data> {
-  tag: string
-  data?: Data
-  children: VirtualNode<Data> | string
+  tag: string;
+  data: Data;
+  children: Array<VirtualNode<Data> | string>;
 }
 
 export interface VirtualComponent<Data> {
-  (data?: Data, ...children: VirtualNode<Data> | string): VirtualNode<Data>
+  (data: Data, children: Array<VirtualNode<Data> | string>): VirtualNode<any>
 }
 
 export function h<Data>(
   tag: VirtualComponent<Data> | string,
   data?: Data,
-  ...children: VirtualNode<Data> | string
+  children?: Array<VirtualNode<Data> | string | number>
+): VirtualNode<Data>
+export function h<Data>(
+  tag: VirtualComponent<Data> | string,
+  data?: Data,
+  ...children: Array<VirtualNode<Data> | string | number>
 ): VirtualNode<Data>
 
 export function patch(
@@ -21,5 +28,11 @@ export function patch(
   parent: Element | null
 ): Element
 
-
-export as namespace picodom
+declare global {
+  namespace JSX {
+    interface Element<Data = any> extends VirtualNode<Data> {}
+    interface IntrinsicElements {
+      [elemName: string]: any
+    }
+  }
+}
