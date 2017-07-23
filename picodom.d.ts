@@ -7,7 +7,7 @@ export interface VNode<Data> {
 }
 
 export interface Component<Data> {
-  (data: Data, children: VElement<{}>[]): VNode<Data>
+  (data: Data, children: VElement<{}>[]): VNode<any>
 }
 
 export type VElement<Data> = VNode<Data> | string
