@@ -42,8 +42,12 @@ h("div", data, "baz")
 const Test: Component<any> = (data, children) => h("div", data, children)
 const Wrapper: Component<TestData> = (data, children) => h("div", data, children.map(vn => h(Test, null, vn)))
 
-// Should throw a compiler error since {id: "foo"} doesn't match the required type TestData
+// The following line, while it isn't type correct (Wrapper requires type TestData for data), it is allowed
+// because the type of `h` defines the `data` param as optional
+h(Wrapper);
+// The following line should throw a compiler error since {id: "foo"} doesn't match the required type TestData
 // h(Wrapper, { id: "foo" });
+h(Test);
 h(Test, { id: "foo" }, "bar")
 h(Test, { id: "foo" }, [h(Test, { id: "bar" })])
 h(Wrapper, data, [

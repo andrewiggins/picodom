@@ -38,7 +38,8 @@ element = <div {...data}>baz</div>
 const Test: Component<any> = (data, children) => <div>{ ...children }</div>
 const Wrapper: Component<TestData> = (data, children) => <div>{ children.map(vn => <Test {...data}>{ vn }</Test>) }</div>
 
-// Should throw a compile error since { id: "foo" } doesn't match the required type TestData
+// The following two lines should throw a compile error since { id: "foo" } or empty doesn't match the required type TestData//
+// element = <Wrapper />
 // element = <Wrapper id="foo">bar</Wrapper>;
 element = <Wrapper {...data}><Test/></Wrapper>
 element = <Wrapper {...data}>
