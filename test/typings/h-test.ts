@@ -1,4 +1,4 @@
-import { h, patch, Component, VNode } from "../../picodom";
+import { h, patch, Component } from "../../picodom";
 
 // empty vnode
 h("div")
