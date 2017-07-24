@@ -24,3 +24,12 @@ export function patch(
   oldNode: VNode<{}> | null,
   node: VNode<{}>
 ): Element
+
+declare global {
+  namespace JSX {
+    interface Element<Data=any> extends VNode<Data> {}
+    interface IntrinsicElements {
+      [elemName: string]: any
+    }
+  }
+}
