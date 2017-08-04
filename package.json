@@ -23,7 +23,7 @@
     "hyperscript"
   ],
   "scripts": {
-    "test": "jest --coverage --no-cache && tsc -p test/typings/tsconfig.json",
+    "test": "jest --coverage --no-cache && bundlesize && tsc -p test/typings/tsconfig.json",
     "build": "rollup -cm -n picodom -f umd -i src/index.js -o dist/picodom.js",
     "format": "prettier --semi false --write 'src/**/*.js' 'picodom.d.ts'",
     "prepublish": "npm run build",
@@ -34,11 +34,18 @@
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
+    "bundlesize": "^0.12.1",
     "jest": "^20.0.4",
     "prettier": "~1.5.3",
     "rollup": "^0.45.2",
     "rollup-plugin-uglify": "^2.0.1",
     "typescript": "^2.4.2"
   },
-  "typings": "picodom.d.ts"
+  "typings": "picodom.d.ts",
+  "bundlesize": [
+    {
+      "path": "./dist/picodom.js",
+      "threshold": "1.2Kb"
+    }
+  ]
 }
