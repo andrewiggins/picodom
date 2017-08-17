@@ -7,7 +7,7 @@ export interface VirtualNode<Data> {
 }
 
 export interface VirtualComponent<Data> {
-  (data: Data, children: Array<VirtualNode<{}> | string>): VirtualNode<any>
+  (data: Data, children: Array<VirtualNode<{}> | string>): VirtualNode<Data>
 }
 
 export function h<Data>(
@@ -18,7 +18,7 @@ export function h<Data>(
 export function h<Data>(
   tag: VirtualComponent<Data> | string,
   data?: Data,
-  ...children: Array<VirtualNode<Data> | string | number>
+  ...children: Array<VirtualNode<{}> | string | number>
 ): VirtualNode<Data>
 
 export function patch(
