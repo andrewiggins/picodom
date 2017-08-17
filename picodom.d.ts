@@ -3,17 +3,17 @@ export as namespace picodom
 export interface VirtualNode<Data> {
   tag: string;
   data: Data;
-  children: Array<VirtualNode<Data> | string>;
+  children: Array<VirtualNode<{}> | string>;
 }
 
 export interface VirtualComponent<Data> {
-  (data: Data, children: Array<VirtualNode<Data> | string>): VirtualNode<any>
+  (data: Data, children: Array<VirtualNode<{}> | string>): VirtualNode<any>
 }
 
 export function h<Data>(
   tag: VirtualComponent<Data> | string,
   data?: Data,
-  children?: Array<VirtualNode<Data> | string | number>
+  children?: Array<VirtualNode<{}> | string | number>
 ): VirtualNode<Data>
 export function h<Data>(
   tag: VirtualComponent<Data> | string,
