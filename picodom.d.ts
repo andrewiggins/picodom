@@ -1,9 +1,9 @@
 export as namespace picodom
 
 export interface VirtualNode<Data> {
-  tag: string;
-  data: Data;
-  children: Array<VirtualNode<{}> | string>;
+  tag: string
+  data: Data
+  children: Array<VirtualNode<{}> | string>
 }
 
 export interface VirtualComponent<Data> {
