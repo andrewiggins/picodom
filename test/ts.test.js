@@ -19,7 +19,11 @@ const tsOptions = loadConfigOptions(
   path.join(__dirname, "./typings/tsconfig.json")
 )
 
-// Should there be assertions per thing I want to test? Investigate using transpileModule to compile individual strings
+// Should there be assertions per thing I want to test? Yes
+// Investigate using transpileModule to compile individual strings.
+// Perhaps specify files to test with their expected errors in each test case and use node fs module to read each file
+// Also, don't bring in the extra complexity of reading tsconfig.json from file. Just specify global options 
+// in this test file
 
 test("typescript definitions compile correctly", () => {})
 
