@@ -18,13 +18,13 @@ h("div", {}, 1, "foo", 2, "baz", 3)
 h("div", {}, "foo", h("div", {}, "bar"), "baz", "quux")
 
 // vnode with props
-interface TestProps {
+export interface TestProps {
   id: string
   class: string
   style: { color: string }
 }
 
-const props: TestProps = {
+export const props: TestProps = {
   id: "foo",
   class: "bar",
   style: {
@@ -34,22 +34,16 @@ const props: TestProps = {
 
 h("div", props, "baz")
 
-// skip Boolean children
-// these throw a compiler error
-// h("div", {}, true)
-// h("div", {}, false)
-
 // component tests
-const Test: Component<any> = (props, children) =>
+export const Test: Component<any> = (props, children) =>
   h("div", props, children)
-const Wrapper: Component<TestProps> = (props, children) =>
+export const Wrapper: Component<TestProps> = (props, children) =>
   h("div", props, children.map(vn => h(Test, null, vn)))
 
 // the following line, while it isn't type correct (Wrapper requires type TestProps for props), it is allowed
 // because the type of `h` defines the `props` param as optional
 h(Wrapper)
-// the following line should throw a compiler error since {id: "foo"} doesn't match the required type TestProps
-// h(Wrapper, { id: "foo" })
+
 h(Test)
 h(Test, { id: "foo" }, "bar")
 h(Test, { id: "foo" }, [h(Test, { id: "bar" })])
@@ -59,9 +53,6 @@ h(Wrapper, props, [
 ])
 
 let element: JSX.Element
-// the following two lines should throw a compile error since { id: "foo" } or empty doesn't match the required type TestProps
-// element = <Wrapper />
-// element = <Wrapper id="foo">bar</Wrapper>
 element = (
   <Wrapper {...props}>
     <Test />
