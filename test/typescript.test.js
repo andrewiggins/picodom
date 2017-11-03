@@ -2,16 +2,17 @@ const path = require("path")
 const ts = require("typescript")
 
 const compilerOptions = {
-  "strict": true,
-  "jsx": ts.JsxEmit.React,
-  "jsxFactory": "h"
+  strict: true,
+  jsx: ts.JsxEmit.React,
+  jsxFactory: "h"
 }
 
-const formatDiagnostics = diagnostics => ts.formatDiagnostics(diagnostics, {
-  getCurrentDirectory: () => process.cwd(),
-  getCanonicalFileName: (fileName) => path.relative(process.cwd(), fileName),
-  getNewLine: () => "\n"
-})
+const formatDiagnostics = diagnostics =>
+  ts.formatDiagnostics(diagnostics, {
+    getCurrentDirectory: () => process.cwd(),
+    getCanonicalFileName: fileName => path.relative(process.cwd(), fileName),
+    getNewLine: () => "\n"
+  })
 
 // For each file, map line numbers to expected error codes
 const expectedErrors = {
@@ -33,25 +34,26 @@ function runTest(fileName, expectedErrorCodes) {
   const fatalDiagnostics = [
     ...program.getGlobalDiagnostics(),
     ...program.getOptionsDiagnostics(),
-    ...program.getSyntacticDiagnostics(),
-  ];
+    ...program.getSyntacticDiagnostics()
+  ]
 
   if (fatalDiagnostics.length) {
-    fail("Unexpected fatal error compiling TypeScript:\n" + formatDiagnostics(fatalDiagnostics))
+    fail(
+      "Unexpected fatal error compiling TypeScript:\n" +
+        formatDiagnostics(fatalDiagnostics)
+    )
   }
 
-  const testDiagnostics = [
-    ...program.getSemanticDiagnostics(),
-  ];
+  const testDiagnostics = [...program.getSemanticDiagnostics()]
 
   fail("Unexpected error: " + formatDiagnostics([testDiagnostics[0]]))
   expect(testDiagnostics.length).toBe(expectedErrorCodes.length)
 
   for (let i = 0; i < expectedErrorCodes.length; i++) {
-    if (expectedErrorCodes[i] !== testDiagnostics[i].code) {}
+    if (expectedErrorCodes[i] !== testDiagnostics[i].code) {
+    }
   }
 }
-
 
 // Perhaps specify files to test with their expected errors in each test case
 
