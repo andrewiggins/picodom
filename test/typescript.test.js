@@ -1,81 +1,73 @@
 const path = require("path")
 const ts = require("typescript")
 
-const compilerOptions = {
-  strict: true,
-  jsx: ts.JsxEmit.React,
-  jsxFactory: "h"
-}
+/**
+ * Directions to update the tests in this file:
+ * 1. Run `tsc -p ./typings/tsconfig.json` from the directory this file is in
+ * 2. Fix any unexpected errors
+ * 3. Copy the output of expected errors to the proper test for that file
+ */
+
+const compilerOptions = loadTsConfig("./typings/tsconfig.json").options
 
 const formatDiagnostics = diagnostics =>
   ts.formatDiagnostics(diagnostics, {
-    getCurrentDirectory: () => process.cwd(),
-    getCanonicalFileName: fileName => path.relative(process.cwd(), fileName),
+    getCurrentDirectory: () => __dirname,
+    getCanonicalFileName: fileName => path.relative(__dirname, fileName),
     getNewLine: () => "\n"
   })
 
-// For each file, map line numbers to expected error codes
-const expectedErrors = {
-  "./typings/h-error.test.tsx": {
-    1: [2304],
-    2: [2304],
-    3: [2304],
-    6: [2345],
-    7: [2345],
-    11: [2345],
-    16: [2322],
-    17: [2322]
-  }
-}
-
-function runTest(fileName, expectedErrorCodes) {
+function getActualDiagnostics(fileName) {
   fileName = path.join(__dirname, fileName)
   const program = ts.createProgram([fileName], compilerOptions)
-  const fatalDiagnostics = [
+  return formatDiagnostics([
     ...program.getGlobalDiagnostics(),
     ...program.getOptionsDiagnostics(),
-    ...program.getSyntacticDiagnostics()
-  ]
-
-  if (fatalDiagnostics.length) {
-    fail(
-      "Unexpected fatal error compiling TypeScript:\n" +
-        formatDiagnostics(fatalDiagnostics)
-    )
-  }
-
-  let actualDiagnostics = program.getSemanticDiagnostics()
-
-  // Get the max line number from both lists
-  const maxLineNumber = Math.max(
-    ...Object.keys(expectedErrorCodes).map(code => parseInt(code)),
-    ...actualDiagnostics.map(diag => diag.start)
-  )
-
-  // Create a map of line numbers to error codes from actual diagnostics
-  // TODO: convert diag.start to line number
-  const actualErrorCodes = actualDiagnostics.reduce(
-    (map, diag) =>
-      map[diag.start]
-        ? map[diag.start].push(diag.code)
-        : (map[diag.start] = [diag.code]),
-    {}
-  )
-
-  // fail("Unexpected error: " + formatDiagnostics([diagnosticsByLine[0]]))
-  // expect(diagnosticsByLine.length).toBe(expectedErrorCodes.length)
-
-  for (let i = 0; i < maxLineNumber; i++) {
-    // check if either expected or actual has an error on this line and validate if that
-    // the other list has the right error too. Fail if missing from either. Skip if neither
-    // have an error on this line
-  }
+    ...program.getSyntacticDiagnostics(),
+    ...program.getSemanticDiagnostics()
+  ]).trim()
 }
 
-// Perhaps specify files to test with their expected errors in each test case
+function loadTsConfig(tsConfigPath) {
+  tsConfigPath = path.join(__dirname, tsConfigPath)
+
+  const tsConfig = ts.readConfigFile(tsConfigPath, ts.sys.readFile)
+  if (tsConfig.error) {
+    throw "Error parsing tsconfig.json.\n" + formatDiagnostics([tsConfig.error])
+  }
+
+  const result = ts.parseJsonConfigFileContent(
+    tsConfig.config || {},
+    ts.sys,
+    path.resolve(path.dirname(tsConfigPath)),
+    undefined,
+    path.basename(tsConfigPath)
+  )
+
+  if (result.errors.length) {
+    throw "Error parsing tsconfig.json.\n" + formatDiagnostics(result.errors)
+  }
+
+  return result
+}
 
 test("typescript should compile with no errors", () => {
-  return runTest("./typings/h.test.tsx", {})
+  expect(getActualDiagnostics("./typings/h.test.tsx")).toBe("")
+  expect(getActualDiagnostics("./typings/patch.test.tsx")).toBe("")
 })
 
-test("typescript definitions throw expected errors", () => {})
+test("Improper usages of h and JSX should throw expected errors", () => {
+  expect(getActualDiagnostics("./typings/h-error.test.tsx")).toEqual(
+    `
+typings/h-error.test.tsx(6,14): error TS2345: Argument of type 'true' is not assignable to parameter of type '(string | number | VNode<{}> | null)[] | undefined'.
+typings/h-error.test.tsx(7,14): error TS2345: Argument of type 'false' is not assignable to parameter of type '(string | number | VNode<{}> | null)[] | undefined'.
+typings/h-error.test.tsx(11,12): error TS2345: Argument of type '{ id: string; }' is not assignable to parameter of type 'TestProps | undefined'.
+  Type '{ id: string; }' is not assignable to type 'TestProps'.
+    Property 'class' is missing in type '{ id: string; }'.
+typings/h-error.test.tsx(16,11): error TS2322: Type '{}' is not assignable to type 'TestProps'.
+  Property 'id' is missing in type '{}'.
+typings/h-error.test.tsx(17,20): error TS2322: Type '{ id: "foo"; }' is not assignable to type 'TestProps'.
+  Property 'class' is missing in type '{ id: "foo"; }'.
+  `.trim()
+  )
+})
