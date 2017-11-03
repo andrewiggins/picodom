@@ -1,10 +1,5 @@
-// const fs = require("fs")
 const path = require("path")
 const ts = require("typescript")
-
-// const readFile = filePath => new Promise((resolve, reject) =>
-//   fs.readFile(filePath, "utf-8", (err, data) => err ? reject(err) : resolve(data))
-// )
 
 const compilerOptions = {
   "strict": true,
@@ -34,7 +29,6 @@ const expectedErrors = {
 
 function runTest(fileName, expectedErrorCodes) {
   fileName = path.join(__dirname, fileName)
-  // return readFile(fileName).then(data => {
   const program = ts.createProgram([fileName], compilerOptions)
   const fatalDiagnostics = [
     ...program.getGlobalDiagnostics(),
@@ -56,14 +50,10 @@ function runTest(fileName, expectedErrorCodes) {
   for (let i = 0; i < expectedErrorCodes.length; i++) {
     if (expectedErrorCodes[i] !== testDiagnostics[i].code) {}
   }
-  // })
 }
 
 
-// Investigate using transpileModule to compile individual strings.
-// Perhaps specify files to test with their expected errors in each test case and use node fs module to read each file
-// Also, don't bring in the extra complexity of reading tsconfig.json from file. Just specify global options 
-// in this test file
+// Perhaps specify files to test with their expected errors in each test case
 
 test("typescript should compile with no errors", () => {
   return runTest("./typings/h.test.tsx", [])
